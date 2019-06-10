@@ -1,2 +1,4 @@
 # wyverse
-White-box analytic framework based on LLVM
+
+Wyverse ([waɪ'vɜːs]) is a framework for analyzing white-box cryptography implementations and reverse-engineering based
+[LLVM](https://llvm.org/).
