@@ -502,8 +502,9 @@ static GenericValue lle_X_memcpy(FunctionType *FT,
   return GV;
 }
 
-static GenericValue lle_X__fopen(FunctionType *FT,
-                                 ArrayRef<GenericValue> Args) {
+// fopen for Linux and MacOS
+static GenericValue lle_X_fopen(FunctionType *FT,
+                                ArrayRef<GenericValue> Args) {
   FILE *fp = fopen((char *)GVTOP(Args[0]), (char *)GVTOP(Args[1]));
   GenericValue GV;
   GV.PointerVal = fp;
@@ -567,7 +568,8 @@ void Interpreter::initializeExternalFunctions() {
   (*FuncNames)["lle_X_memset"]       = lle_X_memset;
   (*FuncNames)["lle_X_memcpy"]       = lle_X_memcpy;
 
-  (*FuncNames)["lle_X__fopen"]       = lle_X__fopen;
+  (*FuncNames)["lle_X_fopen"]        = lle_X_fopen;
+  (*FuncNames)["lle_X__fopen"]       = lle_X_fopen;
   (*FuncNames)["lle_X_fread"]        = lle_X_fread;
   (*FuncNames)["lle_X_fclose"]       = lle_X_fclose;
 
