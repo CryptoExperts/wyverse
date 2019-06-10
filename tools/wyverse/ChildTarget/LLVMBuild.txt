@@ -1,4 +1,4 @@
-;===- ./tools/lli/ChildTarget/LLVMBuild.txt --------------------*- Conf -*--===;
+;===- ./tools/wyverse/ChildTarget/LLVMBuild.txt --------------------*- Conf -*--===;
 ;
 ;                     The LLVM Compiler Infrastructure
 ;
@@ -17,5 +17,5 @@
 
 [component_0]
 type = Tool
-name = lli-child-target
-parent = lli
+name = wyverse-child-target
+parent = wyverse

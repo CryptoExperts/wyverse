@@ -1,4 +1,4 @@
-;===- ./tools/lli/LLVMBuild.txt --------------------------------*- Conf -*--===;
+;===- ./tools/wyverse/LLVMBuild.txt --------------------------------*- Conf -*--===;
 ;
 ;                     The LLVM Compiler Infrastructure
 ;
@@ -20,16 +20,10 @@ subdirectories = ChildTarget
 
 [component_0]
 type = Tool
-name = lli
+name = wyverse
 parent = Tools
 required_libraries =
- AsmParser
  BitReader
  IRReader
- Instrumentation
  Interpreter
- MCJIT
- Native
- NativeCodeGen
- SelectionDAG
  TransformUtils

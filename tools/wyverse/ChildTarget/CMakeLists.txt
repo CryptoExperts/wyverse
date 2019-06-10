@@ -4,10 +4,9 @@ set(LLVM_LINK_COMPONENTS
   Support
   )
 
-add_llvm_utility(lli-child-target
+add_llvm_utility(wyverse-child-target
   ChildTarget.cpp
 
   DEPENDS
   intrinsics_gen
 )
-

@@ -1,4 +1,4 @@
-//===-- RemoteJITUtils.h - Utilities for remote-JITing with LLI -*- C++ -*-===//
+//===-- RemoteJITUtils.h - Utilities for remote-JITing with Wyverse -*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,12 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// Utilities for remote-JITing with LLI.
+// Utilities for remote-JITing with LLVM Tracer.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_TOOLS_LLI_REMOTEJITUTILS_H
-#define LLVM_TOOLS_LLI_REMOTEJITUTILS_H
+#ifndef LLVM_TOOLS_WYVERSE_REMOTEJITUTILS_H
+#define LLVM_TOOLS_WYVERSE_REMOTEJITUTILS_H
 
 #include "llvm/ExecutionEngine/Orc/RawByteChannel.h"
 #include "llvm/ExecutionEngine/RTDyldMemoryManager.h"
@@ -71,7 +71,7 @@ private:
   int InFD, OutFD;
 };
 
-// launch the remote process (see lli.cpp) and return a channel to it.
+// launch the remote process (see wyverse.cpp) and return a channel to it.
 std::unique_ptr<FDRawChannel> launchRemote();
 
 namespace llvm {
