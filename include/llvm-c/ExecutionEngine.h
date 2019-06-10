@@ -36,6 +36,7 @@ extern "C" {
 
 void LLVMLinkInMCJIT(void);
 void LLVMLinkInInterpreter(void);
+void LLVMLinkInWhiteBoxInterpreter(void);
 
 typedef struct LLVMOpaqueGenericValue *LLVMGenericValueRef;
 typedef struct LLVMOpaqueExecutionEngine *LLVMExecutionEngineRef;

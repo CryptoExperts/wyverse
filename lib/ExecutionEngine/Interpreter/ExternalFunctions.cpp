@@ -93,6 +93,11 @@ static char getTypeID(Type *Ty) {
   }
 }
 
+std::string removeNonPrint(std::string s) {
+  s.erase(remove_if(s.begin(), s.end(), [](char c) { return !isprint(c); } ), s.end());
+  return s;
+}
+
 // Try to find address of external function given a Function object.
 // Please note, that interpreter doesn't know how to assemble a
 // real call in general case (this is JIT job), that's why it assumes,
@@ -110,8 +115,11 @@ static ExFunc lookupFunction(const Function *F) {
 
   sys::ScopedLock Writer(*FunctionsLock);
   ExFunc FnPtr = (*FuncNames)[ExtName];
-  if (!FnPtr)
-    FnPtr = (*FuncNames)[("lle_X_" + F->getName()).str()];
+
+  if (!FnPtr) {
+    std::string funcName = removeNonPrint(("lle_X_" + F->getName()).str());
+    FnPtr = (*FuncNames)[funcName];
+  }
   if (!FnPtr)  // Try calling a generic function... if it exists...
     FnPtr = (ExFunc)(intptr_t)sys::DynamicLibrary::SearchForAddressOfSymbol(
         ("lle_X_" + F->getName()).str());
@@ -494,6 +502,57 @@ static GenericValue lle_X_memcpy(FunctionType *FT,
   return GV;
 }
 
+static GenericValue lle_X__fopen(FunctionType *FT,
+                                 ArrayRef<GenericValue> Args) {
+  FILE *fp = fopen((char *)GVTOP(Args[0]), (char *)GVTOP(Args[1]));
+  GenericValue GV;
+  GV.PointerVal = fp;
+  return GV;
+}
+
+size_t APIntTOSIZET(APInt V) {
+  return (size_t)*V.getRawData();
+}
+int APIntTOInt(APInt V) {
+  return (int)*V.getRawData();
+}
+
+static GenericValue lle_X_fread(FunctionType *FT, ArrayRef<GenericValue> Args) {
+  size_t bytes = fread(GVTOP(Args[0]), APIntTOSIZET(Args[1].IntVal),
+		       APIntTOSIZET(Args[2].IntVal), (FILE *)GVTOP(Args[3]));
+  GenericValue GV;
+  GV.IntVal = bytes;
+  return GV;
+}
+
+static GenericValue lle_X_fclose(FunctionType *FT,
+				 ArrayRef<GenericValue> Args) {
+  int ret = fclose((FILE *)GVTOP(Args[0]));
+  GenericValue GV;
+  GV.IntVal = ret;
+  return GV;
+}
+
+
+static GenericValue lle_X_strtoul(FunctionType *FT,
+				  ArrayRef<GenericValue> Args) {
+  unsigned long int ret = strtoul((char *)GVTOP(Args[0]),
+				  (char **)GVTOP(Args[1]),
+				  APIntTOInt(Args[2].IntVal));
+  GenericValue GV;
+  GV.IntVal = APInt(sizeof(ret)*8, ret);
+  return GV;
+}
+
+static GenericValue lle_X_putchar(FunctionType *FT,
+				  ArrayRef<GenericValue> Args) {
+  int ret = putchar(APIntTOInt(Args[0].IntVal));
+  GenericValue GV;
+  GV.IntVal = APInt(sizeof(ret)*8, ret);
+  return GV;
+}
+
+
 void Interpreter::initializeExternalFunctions() {
   sys::ScopedLock Writer(*FunctionsLock);
   (*FuncNames)["lle_X_atexit"]       = lle_X_atexit;
@@ -507,4 +566,11 @@ void Interpreter::initializeExternalFunctions() {
   (*FuncNames)["lle_X_fprintf"]      = lle_X_fprintf;
   (*FuncNames)["lle_X_memset"]       = lle_X_memset;
   (*FuncNames)["lle_X_memcpy"]       = lle_X_memcpy;
+
+  (*FuncNames)["lle_X__fopen"]       = lle_X__fopen;
+  (*FuncNames)["lle_X_fread"]        = lle_X_fread;
+  (*FuncNames)["lle_X_fclose"]       = lle_X_fclose;
+
+  (*FuncNames)["lle_X_strtoul"]      = lle_X_strtoul;
+  (*FuncNames)["lle_X_putchar"]      = lle_X_putchar;
 }

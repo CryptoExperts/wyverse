@@ -7,9 +7,12 @@ if( FFI_INCLUDE_PATH )
 endif()
 
 add_llvm_library(LLVMInterpreter
+  Action.cpp
   Execution.cpp
   ExternalFunctions.cpp
   Interpreter.cpp
+  WhiteBoxExecution.cpp
+  WhiteBoxInterpreter.cpp
 
   DEPENDS
   intrinsics_gen

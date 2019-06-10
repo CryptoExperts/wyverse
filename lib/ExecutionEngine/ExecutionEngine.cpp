@@ -59,6 +59,9 @@ ExecutionEngine *(*ExecutionEngine::OrcMCJITReplacementCtor)(
 
 ExecutionEngine *(*ExecutionEngine::InterpCtor)(std::unique_ptr<Module> M,
                                                 std::string *ErrorStr) =nullptr;
+ExecutionEngine *(*ExecutionEngine::WBInterpCtor)(std::unique_ptr<Module> M,
+						  Action *action,
+						  std::string *ErrorStr) =nullptr;
 
 void JITEventListener::anchor() {}
 
@@ -559,6 +562,14 @@ ExecutionEngine *EngineBuilder::create(TargetMachine *TM) {
   if (WhichEngine & EngineKind::Interpreter) {
     if (ExecutionEngine::InterpCtor)
       return ExecutionEngine::InterpCtor(std::move(M), ErrorStr);
+    if (ErrorStr)
+      *ErrorStr = "Interpreter has not been linked in.";
+    return nullptr;
+  }
+  /** register the WhiteBoxInterpreter **/
+  else if (WhichEngine & EngineKind::WhiteBoxInterpreter) {
+    if (ExecutionEngine::WBInterpCtor)
+      return ExecutionEngine::WBInterpCtor(std::move(M), action, ErrorStr);
     if (ErrorStr)
       *ErrorStr = "Interpreter has not been linked in.";
     return nullptr;

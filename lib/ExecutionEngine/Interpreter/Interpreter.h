@@ -74,16 +74,17 @@ struct ExecutionContext {
 // Interpreter - This class represents the entirety of the interpreter.
 //
 class Interpreter : public ExecutionEngine, public InstVisitor<Interpreter> {
-  GenericValue ExitValue;          // The return value of the called function
   IntrinsicLowering *IL;
-
-  // The runtime stack of executing code.  The top of the stack is the current
-  // function record.
-  std::vector<ExecutionContext> ECStack;
 
   // AtExitHandlers - List of functions to call when the program exits,
   // registered with the atexit() library function.
   std::vector<Function*> AtExitHandlers;
+
+protected:
+  GenericValue ExitValue;          // The return value of the called function
+  // The runtime stack of executing code.  The top of the stack is the current
+  // function record.
+  std::vector<ExecutionContext> ECStack;
 
 public:
   explicit Interpreter(std::unique_ptr<Module> M);
@@ -184,6 +185,7 @@ public:
     return &(ECStack.back ().VarArgs[0]);
   }
 
+  GenericValue getOperandValue(Value *V, ExecutionContext &SF);
 private:  // Helper functions
   GenericValue executeGEPOperation(Value *Ptr, gep_type_iterator I,
                                    gep_type_iterator E, ExecutionContext &SF);
@@ -199,7 +201,6 @@ private:  // Helper functions
   void initializeExecutionEngine() { }
   void initializeExternalFunctions();
   GenericValue getConstantExprValue(ConstantExpr *CE, ExecutionContext &SF);
-  GenericValue getOperandValue(Value *V, ExecutionContext &SF);
   GenericValue executeTruncInst(Value *SrcVal, Type *DstTy,
                                 ExecutionContext &SF);
   GenericValue executeSExtInst(Value *SrcVal, Type *DstTy,

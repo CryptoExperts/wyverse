@@ -3,52 +3,18 @@ if ( LLVM_INCLUDE_UTILS )
 endif()
 
 set(LLVM_LINK_COMPONENTS
-  CodeGen
   Core
   ExecutionEngine
   IRReader
   Interpreter
-  MC
-  MCJIT
-  Object
-  OrcJIT
-  RuntimeDyld
-  SelectionDAG
   Support
-  Target
   TransformUtils
-  native
   )
 
-if( LLVM_USE_OPROFILE )
-  set(LLVM_LINK_COMPONENTS
-    ${LLVM_LINK_COMPONENTS}
-    OProfileJIT
-    )
-endif( LLVM_USE_OPROFILE )
-
-if( LLVM_USE_INTEL_JITEVENTS )
-  set(LLVM_LINK_COMPONENTS
-    ${LLVM_LINK_COMPONENTS}
-    DebugInfoDWARF
-    IntelJITEvents
-    Object
-    )
-endif( LLVM_USE_INTEL_JITEVENTS )
-
-if( LLVM_USE_PERF )
-  set(LLVM_LINK_COMPONENTS
-    ${LLVM_LINK_COMPONENTS}
-    DebugInfoDWARF
-    PerfJITEvents
-    Object
-    )
-endif( LLVM_USE_PERF )
-
-add_llvm_tool(lli
-  lli.cpp
+add_llvm_tool(wyverse
+  wyverse.cpp
 
   DEPENDS
   intrinsics_gen
   )
-export_executable_symbols(lli)
+export_executable_symbols(wyverse)

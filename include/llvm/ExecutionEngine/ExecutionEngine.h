@@ -15,6 +15,7 @@
 #ifndef LLVM_EXECUTIONENGINE_EXECUTIONENGINE_H
 #define LLVM_EXECUTIONENGINE_EXECUTIONENGINE_H
 
+#include "Action.h"
 #include "llvm-c/ExecutionEngine.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
@@ -149,6 +150,12 @@ protected:
 
   static ExecutionEngine *(*InterpCtor)(std::unique_ptr<Module> M,
                                         std::string *ErrorStr);
+
+  /** white-box interpreter creator **/
+  static ExecutionEngine *(*WBInterpCtor)(std::unique_ptr<Module> M,
+					  Action *action,
+					  std::string *ErrorStr);
+
 
   /// LazyFunctionCreator - If an unknown function is needed, this function
   /// pointer is invoked to create it.  If this returns null, the JIT will
@@ -513,10 +520,11 @@ namespace EngineKind {
 
   // These are actually bitmasks that get or-ed together.
   enum Kind {
-    JIT         = 0x1,
-    Interpreter = 0x2
+    JIT                 = 0x1,
+    Interpreter         = 0x2,
+    WhiteBoxInterpreter = 0x4,
   };
-  const static Kind Either = (Kind)(JIT | Interpreter);
+  const static Kind Either = (Kind)(JIT | Interpreter | WhiteBoxInterpreter);
 
 } // end namespace EngineKind
 
@@ -540,6 +548,8 @@ private:
   bool VerifyModules;
   bool UseOrcMCJITReplacement;
   bool EmulatedTLS = true;
+
+  Action *action;
 
 public:
   /// Default constructor for EngineBuilder.
@@ -657,6 +667,12 @@ public:
   }
 
   ExecutionEngine *create(TargetMachine *TM);
+
+  EngineBuilder &setAction(Action *action) {
+    this->action = action;
+    return *this;
+  }
+
 };
 
 // Create wrappers for C Binding types (see CBindingWrapping.h).

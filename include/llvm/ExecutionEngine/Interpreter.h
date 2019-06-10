@@ -18,11 +18,17 @@
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 
 extern "C" void LLVMLinkInInterpreter();
+extern "C" void LLVMLinkInWhiteBoxInterpreter();
 
 namespace {
   struct ForceInterpreterLinking {
     ForceInterpreterLinking() { LLVMLinkInInterpreter(); }
   } ForceInterpreterLinking;
+
+  struct ForceWhiteBoxInterpreterLinking {
+    ForceWhiteBoxInterpreterLinking() { LLVMLinkInWhiteBoxInterpreter(); }
+  } ForceWhiteBoxInterpreterLinking;
+
 }
 
 #endif
